@@ -1,47 +1,44 @@
-# Tiny Tapeout project information
+yaml_version: 6
+
 project:
-  title:        "8-bit Signed CPU"      # Το όνομα του επεξεργαστή σου
+  title:        "8-bit Signed CPU"      
   description:  "A modular 24-pin 8-bit Signed CPU with 16 ALU operations and LOAD/STORE capabilities"
-  author:       "Student"               # Βάλε το όνομά σου αν θες
+  author:       "Student"               
   language:     "SystemVerilog"
-  clock_hz:     10000000                # Ταχύτητα λειτουργίας (10 MHz)
+  clock_hz:     10000000                
+  tiles:        "1x1"                   
 
-  # Η λίστα με τα SystemVerilog αρχεία που ανέβασες
   source_files:
-    - "project.sv"
-    - "alu.sv"
-    - "ram.sv"
-    - "control.sv"
-    - "edge_detector.sv"
+    - "src/project.sv"
+    - "src/alu.sv"
+    - "src/ram.sv"
+    - "src/control.sv"
+    - "src/edge_detector.sv"
 
-  top_module:  "tt_um_example"          # Το όνομα του κεντρικού module στο project.sv
+  top_module:  "tt_um_top"              
 
-# Ορισμός των 24 Pins — Ακριβώς όπως τα σχεδιάσαμε!
-documentation: 
-  inputs:
-    - "LIVE Data Bit 0"
-    - "LIVE Data Bit 1"
-    - "LIVE Data Bit 2"
-    - "LIVE Data Bit 3"
-    - "LIVE Data Bit 4"
-    - "LIVE Data Bit 5"
-    - "LIVE Data Bit 6"
-    - "LIVE Data Bit 7"
-  outputs:
-    - "Accumulator LED Bit 0"
-    - "Accumulator LED Bit 1"
-    - "Accumulator LED Bit 2"
-    - "Accumulator LED Bit 3"
-    - "Accumulator LED Bit 4"
-    - "Accumulator LED Bit 5"
-    - "Accumulator LED Bit 6"
-    - "Accumulator LED Bit 7"
-  bidirectional:
-    - "LIVE Opcode Bit 0 (In)"
-    - "LIVE Opcode Bit 1 (In)"
-    - "LIVE Opcode Bit 2 (In)"
-    - "LIVE Opcode Bit 3 (In)"
-    - "Clock Source Select (0=Auto, 1=Manual) (In)"
-    - "Mode Select (0=RAM, 1=LIVE) (In)"
-    - "Manual Clock Step Button (In)"
-    - "Overflow Flag LED (Out)"
+pinout:
+  ui[0]: "LIVE Data Bit 0"
+  ui[1]: "LIVE Data Bit 1"
+  ui[2]: "LIVE Data Bit 2"
+  ui[3]: "LIVE Data Bit 3"
+  ui[4]: "LIVE Data Bit 4"
+  ui[5]: "LIVE Data Bit 5"
+  ui[6]: "LIVE Data Bit 6"
+  ui[7]: "LIVE Data Bit 7"
+  uo[0]: "Accumulator LED Bit 0"
+  uo[1]: "Accumulator LED Bit 1"
+  uo[2]: "Accumulator LED Bit 2"
+  uo[3]: "Accumulator LED Bit 3"
+  uo[4]: "Accumulator LED Bit 4"
+  uo[5]: "Accumulator LED Bit 5"
+  uo[6]: "Accumulator LED Bit 7"
+  uo[7]: "Accumulator LED Bit 7"
+  uio[0]: "LIVE Opcode Bit 0"
+  uio[1]: "LIVE Opcode Bit 1"
+  uio[2]: "LIVE Opcode Bit 2"
+  uio[3]: "LIVE Opcode Bit 3"
+  uio[4]: "Clock Source Select"
+  uio[5]: "Mode Select"
+  uio[6]: "Manual Clock Step Button"
+  uio[7]: "Overflow Flag LED"
