@@ -1,6 +1,9 @@
 `default_nettype none
 
-module tt_um_example (
+module tt_um_top (
+    input  wire [7:0] ui_in,
+    ...
+ (
     input  wire [7:0] ui_in,    // ui_in[7:0]: LIVE 8-bit Signed Δεδομένα (Διακόπτες SW7-SW0)
     output wire [7:0] uo_out,   // uo_out[7:0]: Έξοδος Accumulator (8 κεντρικά LED)
     input  wire [7:0] uio_in,   // uio_in[3:0]=Opcode, uio_in[4]=clk_source, uio_in[5]=clk_select, uio_in[6]=button
