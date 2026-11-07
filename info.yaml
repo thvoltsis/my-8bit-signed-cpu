@@ -1,12 +1,13 @@
 # Tiny Tapeout project information
 project:
-  pdk:          "sky130"                # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΕΛΕΙΠΕ ΚΑΙ ΕΒΓΑΛΕ ERROR!
-  title:        "8-bit Signed CPU"      
+  pdk:          "sky130"                # Τεχνολογία SkyWater 130nm
+  title:        "8-bit Signed CPU"      # Το όνομα του επεξεργαστή σου
   description:  "A modular 24-pin 8-bit Signed CPU with 16 ALU operations and LOAD/STORE capabilities"
   author:       "Student"               
   language:     "SystemVerilog"
-  clock_hz:     10000000                
+  clock_hz:     10000000                # Ταχύτητα λειτουργίας (10 MHz)
 
+  # Η λίστα με τα SystemVerilog αρχεία που ανέβασες
   source_files:
     - "project.sv"
     - "alu.sv"
@@ -14,5 +15,34 @@ project:
     - "control.sv"
     - "edge_detector.sv"
 
-  top_module:  "tt_um_example"          
+  top_module:  "tt_um_example"          # Το όνομα του κεντρικού module στο project.sv
 
+# Ορισμός των 24 Pins — Ακριβώς όπως τα σχεδιάσαμε!
+documentation: 
+  inputs:
+    - "LIVE Data Bit 0"
+    - "LIVE Data Bit 1"
+    - "LIVE Data Bit 2"
+    - "LIVE Data Bit 3"
+    - "LIVE Data Bit 4"
+    - "LIVE Data Bit 5"
+    - "LIVE Data Bit 6"
+    - "LIVE Data Bit 7"
+  outputs:
+    - "Accumulator LED Bit 0"
+    - "Accumulator LED Bit 1"
+    - "Accumulator LED Bit 2"
+    - "Accumulator LED Bit 3"
+    - "Accumulator LED Bit 4"
+    - "Accumulator LED Bit 5"
+    - "Accumulator LED Bit 6"
+    - "Accumulator LED Bit 7"
+  bidirectional:
+    - "LIVE Opcode Bit 0 (In)"
+    - "LIVE Opcode Bit 1 (In)"
+    - "LIVE Opcode Bit 2 (In)"
+    - "LIVE Opcode Bit 3 (In)"
+    - "Clock Source Select (0=Auto, 1=Manual) (In)"
+    - "Mode Select (0=RAM, 1=LIVE) (In)"
+    - "Manual Clock Step Button (In)"
+    - "Overflow Flag LED (Out)"
