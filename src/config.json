@@ -1,0 +1,15 @@
+{
+  "DESIGN_NAME": "tt_um_top",
+  "VERILOG_FILES": [
+    "dir::../project.sv",
+    "dir::../alu.sv",
+    "dir::../ram.sv",
+    "dir::../control.sv",
+    "dir::../edge_detector.sv"
+  ],
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 100.0,
+  "FP_SIZING": "absolute",
+  "DIE_AREA": "0 0 168.36 111.52",
+  "PL_TARGET_DENSITY": 0.55
+}
