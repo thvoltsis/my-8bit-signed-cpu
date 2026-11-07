@@ -21,3 +21,6 @@ jobs:
         uses: tinytapeout/tt-gds-action@main
         with:
           install_tools: true
+        env:
+          PDK: "sky130A"               # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΑΝΑΓΚΑΖΕΙ ΤΟ SCRIPT NA ΔΕΙ ΤΟ PDK!
+          PDK_ROOT: "/usr/share/pdk"
