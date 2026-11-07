@@ -22,5 +22,6 @@ jobs:
         with:
           install_tools: true
         env:
-          PDK: "sky130A"               # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΑΝΑΓΚΑΖΕΙ ΤΟ SCRIPT NA ΔΕΙ ΤΟ PDK!
+          TT_ARGS: "--pdk sky130A"      # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΓΕΜΙΖΕΙ ΤΟ $TT_ARGS ΜΕ ΤΟ ΣΩΣΤΟ PDK!
+          PDK: "sky130A"
           PDK_ROOT: "/usr/share/pdk"
