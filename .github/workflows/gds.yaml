@@ -15,9 +15,9 @@ jobs:
       - name: Install Python and dependencies
         uses: actions/setup-python@v5
         with:
-          python-python: '3.10'
+          python-version: '3.10'
 
       - name: Setup Tiny Tapeout Action
-        uses: tinytapeout/tt-gds-action@v2
+        uses: tinytapeout/tt-gds-action@main
         with:
           install_tools: true
