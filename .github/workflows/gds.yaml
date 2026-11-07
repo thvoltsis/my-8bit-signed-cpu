@@ -12,15 +12,190 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Prepare directories and names
+      - name: Hardcode and Inject Project Files
         run: |
           mkdir -p src
-          [ -f top.sv ] && cp top.sv src/project.sv || true
-          [ -f alu.sv ] && cp alu.sv src/alu.sv || true
-          [ -f ram.sv ] && cp ram.sv src/ram.sv || true
-          [ -f control.sv ] && cp control.sv src/control.sv || true
-          [ -f edge_det.sv ] && cp edge_det.sv src/edge_detector.sv || true
-          [ -f edge_detector.sv ] && cp edge_detector.sv src/edge_detector.sv || true
+          
+          # 1. Inject ALU
+          cat << 'EOF' > src/alu.sv
+          `default_nettype none
+          module alu (
+              input  wire signed [7:0] a,
+              input  wire signed [7:0] b,
+              input  wire        [3:0] alu_op,
+              output reg  signed [7:0] alu_out,
+              output reg               overflow
+          );
+              always @(*) begin
+                  overflow = 1'b0; 
+                  case (alu_op)
+                      4'b0001: begin
+                          alu_out = a + b;
+                          if ((a == b) && (alu_out != a)) overflow = 1'b1;
+                      end
+                      4'b0010: begin
+                          alu_out = a - b;
+                          if ((a != b) && (alu_out != a)) overflow = 1'b1;
+                      end
+                      4'b0011: begin
+                          alu_out = a + 1'b1;
+                          if (a == 8'sb01111111) overflow = 1'b1; 
+                      end
+                      4'b0100: begin
+                          alu_out = a - 1'b1;
+                          if (a == 8'sb10000000) overflow = 1'b1; 
+                      end
+                      4'b0101: alu_out = b;
+                      4'b0110: alu_out = a;
+                      4'b0111: alu_out = a & b;
+                      4'b1000: alu_out = a | b;  
+                      4'b1001: alu_out = a ^ b; 
+                      4'b1010: alu_out = ~a;        
+                      4'b1011: alu_out = a << 1;    
+                      4'b1100: alu_out = a >>> 1;   
+                      default: alu_out = a;
+                  endcase
+              end
+          endmodule
+          EOF
+
+          # 2. Inject RAM
+          cat << 'EOF' > src/ram.sv
+          `default_nettype none
+          module ram (
+              input  wire       clk,
+              input  wire       write_enable, 
+              input  wire [3:0] address,      
+              input  wire [7:0] data_in,      
+              output wire [7:0] data_out      
+          );
+              reg [7:0] memory [0:15];
+              initial begin
+                  memory[0] = 8'h54; memory[1] = 8'h15; memory[2] = 8'h6F; memory[3] = 8'hF0;
+                  memory[4] = 8'h0A; memory[5] = 8'h05;
+                  memory[6] = 8'h00; memory[7] = 8'h00; memory[8] = 8'h00; memory[9] = 8'h00;
+                  memory[10] = 8'h00; memory[11] = 8'h00; memory[12] = 8'h00; memory[13] = 8'h00;
+                  memory[14] = 8'h00; memory[15] = 8'h00;
+              end
+              always @(posedge clk) begin
+                  if (write_enable) memory[address] <= data_in;
+              end
+              assign data_out = memory[address];
+          endmodule
+          EOF
+
+          # 3. Inject Edge Detector
+          cat << 'EOF' > src/edge_detector.sv
+          `default_nettype none
+          module edge_detector (
+              input  wire clk,
+              input  wire rst_n,
+              input  wire button_in,
+              output wire pulse_out
+          );
+              reg r1, r2;
+              always @(posedge clk) begin
+                  if (!rst_n) begin
+                      r1 <= 1'b0; r2 <= 1'b0;
+                  end else begin
+                      r1 <= button_in; r2 <= r1;
+                  end
+              end
+              assign pulse_out = r1 && !r2;
+          endmodule
+          EOF
+
+          # 4. Inject Control
+          cat << 'EOF' > src/control.sv
+          `default_nettype none
+          module control (
+              input  wire              clk,
+              input  wire              rst_n,
+              input  wire        [7:0] ram_data_in,      
+              input  wire signed [7:0] alu_result_in,    
+              input  wire              alu_overflow_in,  
+              input  wire              clk_select,       
+              output reg         [3:0] program_counter,
+              output reg  signed [7:0] accumulator,
+              output reg         [7:0] instruction_register,
+              output reg         [3:0] alu_op_out,
+              output reg               ram_we_out,
+              output reg         [1:0] current_state_out,
+              output reg               overflow_flag
+          );
+              reg [1:0] state;
+              wire [3:0] opcode = instruction_register[7:4];
+              wire [3:0] addr   = instruction_register[3:0];
+              always @(posedge clk) begin
+                  if (!rst_n) begin
+                      program_counter <= 4'b0000; accumulator <= 8'sh00;
+                      instruction_register <= 8'b00000000; overflow_flag <= 1'b0;
+                      state <= 2'b00; ram_we_out <= 1'b0; alu_op_out <= 4'b0000;
+                  end else begin
+                      if (clk_select) begin
+                          accumulator <= alu_result_in; overflow_flag <= alu_overflow_in;
+                      end else begin
+                          case (state)
+                              2'b00: begin
+                                  ram_we_out <= 1'b0; instruction_register <= ram_data_in; state <= 2'b01;
+                              end
+                              2'b01: begin
+                                  alu_op_out <= opcode; if (opcode == 4'b0110) ram_we_out <= 1'b1; state <= 2'b10;
+                              end
+                              2'b10: begin
+                                  if (opcode != 4'b1111 && opcode != 4'b0110) begin
+                                      accumulator <= alu_result_in; overflow_flag <= alu_overflow_in;
+                                  end else if (opcode == 4'b1111) begin
+                                      program_counter <= addr;
+                                  end
+                                  if (opcode == 4'b0110) ram_we_out <= 1'b0;
+                                  if (opcode != 4'b1111) program_counter <= program_counter + 1;
+                                  state <= 2'b00;
+                              end
+                          endcase
+                      end
+                  end
+              end
+              assign current_state_out = state;
+          endmodule
+          EOF
+
+          # 5. Inject Top Module (project.sv)
+          cat << 'EOF' > src/project.sv
+          `default_nettype none
+          module tt_um_top (
+              input  wire [7:0] ui_in,    
+              output wire [7:0] uo_out,   
+              input  wire [7:0] uio_in,   
+              output wire [7:0] uio_out,  
+              output wire [7:0] uio_oe,   
+              input  wire       ena,      
+              input  wire       clk,      
+              input  wire       rst_n     
+          );
+              wire [3:0] live_opcode = uio_in[3:0]; 
+              wire clk_source        = uio_in[4];   
+              wire clk_select        = uio_in[5];   
+              wire manual_button     = uio_in[6];   
+              assign uio_oe = 8'b10000000; 
+              wire button_pulse, internal_cpu_clk;
+              edge_detector my_edge_det (.clk(clk), .rst_n(rst_n), .button_in(manual_button), .pulse_out(button_pulse));
+              assign internal_cpu_clk = clk_source ? button_pulse : clk;
+              wire [7:0] data_bus, ram_out;
+              wire [3:0] pc;
+              wire signed [7:0] accum, alu_out;
+              wire [7:0] inst_reg;
+              wire [3:0] alu_op;
+              wire ram_we, alu_of, of_flag;
+              wire [1:0] cpu_state;
+              ram my_ram (.clk(internal_cpu_clk), .write_enable(ram_we), .address(clk_select ? live_opcode : (cpu_state == 2'b00 ? pc : inst_reg[3:0])), .data_in(data_bus), .data_out(ram_out));
+              alu my_alu (.a(accum), .b(clk_select ? ui_in : data_bus), .alu_op(clk_select ? live_opcode : alu_op), .alu_out(alu_out), .overflow(alu_of));
+              control my_control (.clk(internal_cpu_clk), .rst_n(rst_n), .ram_data_in(data_bus), .alu_result_in(alu_out), .alu_overflow_in(alu_of), .clk_select(clk_select), .program_counter(pc), .accumulator(accum), .instruction_register(inst_reg), .alu_op_out(alu_op), .ram_we_out(ram_we), .current_state_out(cpu_state), .overflow_flag(of_flag));
+              assign data_bus = ram_we ? accum : ram_out;
+              assign uo_out  = accum;                            
+              assign uio_out = {of_flag, 7'b0000000};            
+          endmodule
+          EOF
 
       - name: Install Python and dependencies
         uses: actions/setup-python@v5
