@@ -1,6 +1,6 @@
 # Tiny Tapeout project information
 project:
-  pdk:          "sky130"                # Τεχνολογία SkyWater 130nm
+  pdk:          "sky130A"                # Τεχνολογία SkyWater 130nm
   title:        "8-bit Signed CPU"      # Το όνομα του επεξεργαστή σου
   description:  "A modular 24-pin 8-bit Signed CPU with 16 ALU operations and LOAD/STORE capabilities"
   author:       "Student"               
