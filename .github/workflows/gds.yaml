@@ -12,6 +12,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Prepare directories and names
+        run: |
+          mkdir -p src
+          [ -f top.sv ] && cp top.sv src/project.sv || true
+          [ -f alu.sv ] && cp alu.sv src/alu.sv || true
+          [ -f ram.sv ] && cp ram.sv src/ram.sv || true
+          [ -f control.sv ] && cp control.sv src/control.sv || true
+          [ -f edge_det.sv ] && cp edge_det.sv src/edge_detector.sv || true
+          [ -f edge_detector.sv ] && cp edge_detector.sv src/edge_detector.sv || true
+
       - name: Install Python and dependencies
         uses: actions/setup-python@v5
         with:
@@ -20,8 +30,8 @@ jobs:
       - name: Setup Tiny Tapeout Action
         uses: tinytapeout/tt-gds-action@main
         with:
-          install_tools: true
+          pdk: "sky130A"
         env:
-          TT_ARGS: "--pdk sky130A"      # <--- ΑΥΤΗ Η ΓΡΑΜΜΗ ΓΕΜΙΖΕΙ ΤΟ $TT_ARGS ΜΕ ΤΟ ΣΩΣΤΟ PDK!
+          TT_ARGS: "--pdk sky130A"
           PDK: "sky130A"
           PDK_ROOT: "/usr/share/pdk"
