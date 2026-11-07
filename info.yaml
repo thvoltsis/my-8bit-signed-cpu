@@ -1,12 +1,14 @@
 # Tiny Tapeout project information
-pdk: "sky130A"
+yaml_version: [2]                       # <--- ΑΥΤΟ ΖΗΤΗΣΕ!
 
 project:
+  pdk:          "sky130A"               
   title:        "8-bit Signed CPU"      
   description:  "A modular 24-pin 8-bit Signed CPU with 16 ALU operations and LOAD/STORE capabilities"
   author:       "Student"               
   language:     "SystemVerilog"
   clock_hz:     10000000                
+  tiles:        "1x1"                   # <--- ΚΑΙ ΑΥΤΟ ΖΗΤΗΣΕ! (Καταλαμβάνει 1 tile)
 
   source_files:
     - "project.sv"
@@ -15,10 +17,11 @@ project:
     - "control.sv"
     - "edge_detector.sv"
 
-  top_module:  "top"                    # <--- Εδώ βάλαμε το "top" αντί για το tt_um_example!
+  top_module:  "tt_um_top"              # <--- ΜΕΤΟΝΟΜΑΣΙΑ ΣΕ tt_um_top!
 
-documentation: 
-  inputs:
+# Η ενότητα pinout που ζήτησε ο compiler για τη διευθέτηση των pins
+pinout:
+  ui_in:
     - "LIVE Data Bit 0"
     - "LIVE Data Bit 1"
     - "LIVE Data Bit 2"
@@ -27,7 +30,7 @@ documentation:
     - "LIVE Data Bit 5"
     - "LIVE Data Bit 6"
     - "LIVE Data Bit 7"
-  outputs:
+  uo_out:
     - "Accumulator LED Bit 0"
     - "Accumulator LED Bit 1"
     - "Accumulator LED Bit 2"
@@ -36,13 +39,36 @@ documentation:
     - "Accumulator LED Bit 5"
     - "Accumulator LED Bit 6"
     - "Accumulator LED Bit 7"
-  bidirectional:
-    - "LIVE Opcode Bit 0 (In)"
-    - "LIVE Opcode Bit 1 (In)"
-    - "LIVE Opcode Bit 2 (In)"
-    - "LIVE Opcode Bit 3 (In)"
-    - "Clock Source Select (0=Auto, 1=Manual) (In)"
-    - "Mode Select (0=RAM, 1=LIVE) (In)"
-    - "Manual Clock Step Button (In)"
-    - "Overflow Flag LED (Out)"
+  uio_in:
+    - "LIVE Opcode Bit 0"
+    - "LIVE Opcode Bit 1"
+    - "LIVE Opcode Bit 2"
+    - "LIVE Opcode Bit 3"
+    - "Clock Source Select"
+    - "Mode Select"
+    - "Manual Clock Step Button"
+    - "UNUSED"
+  uio_out:
+    - "UNUSED"
+    - "UNUSED"
+    - "UNUSED"
+    - "UNUSED"
+    - "UNUSED"
+    - "UNUSED"
+    - "UNUSED"
+    - "Overflow Flag LED"
+  uio_oe:
+    - "In"
+    - "In"
+    - "In"
+    - "In"
+    - "In"
+    - "In"
+    - "In"
+    - "Out"
+
+documentation:
+  inputs: "LIVE Data inputs"
+  outputs: "Accumulator outputs"
+  bidirectional: "Control and status pins"
 
