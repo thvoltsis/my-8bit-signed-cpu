@@ -2,23 +2,25 @@
 
 module tt_um_top (
     input  wire [7:0] ui_in,
-    ...
- (
-    input  wire [7:0] ui_in,    // ui_in[7:0]: LIVE 8-bit Signed Δεδομένα (Διακόπτες SW7-SW0)
-    output wire [7:0] uo_out,   // uo_out[7:0]: Έξοδος Accumulator (8 κεντρικά LED)
-    input  wire [7:0] uio_in,   // uio_in[3:0]=Opcode, uio_in[4]=clk_source, uio_in[5]=clk_select, uio_in[6]=button
-    output wire [7:0] uio_out,  // uio_out[7]: Έξοδος Overflow Flag σε LED
-    output wire [7:0] uio_oe,   // Direction control των Bidirectional pins
-    input  wire       ena,      
-    input  wire       clk,      // Εσωτερικό γρήγορο ρολόι
-    input  wire       rst_n     
+    output wire [7:0] uo_out,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
+    input  wire       ena,
+    input  wire       clk,
+    input  wire       rst_n
 );
 
-    // Αντιστοίχηση των αμφίδρομων pins εισόδου (uio_in)
-    wire [3:0] live_opcode = uio_in[3:0]; // 4 pins για τις 16 εντολές LIVE
-    wire clk_source        = uio_in[4];   // 0 = Auto CLK, 1 = Χειροκίνητο Κουμπί
-    wire clk_select        = uio_in[5];   // 0 = RAM Program, 1 = LIVE Mode
-    wire manual_button     = uio_in[6];   // Push button για manual clock step
+    // Αντιστοίχηση των αμφίδρομων pins εισόδου
+    wire [3:0] live_opcode;
+    wire clk_source;
+    wire clk_select;
+    wire manual_button;
+
+    assign live_opcode   = uio_in[3:0]; 
+    assign clk_source    = uio_in[4];   
+    assign clk_select    = uio_in[5];   
+    assign manual_button = uio_in[6];   
 
     // Ρύθμιση κατεύθυνσης: uio[6:0] είναι Είσοδοι (0), uio[7] είναι Έξοδος (1) για το Overflow
     assign uio_oe = 8'b10000000; 
@@ -34,7 +36,6 @@ module tt_um_top (
         .pulse_out(button_pulse)
     );
 
-    // Επιλογή ρολογιού: Αυτόματο ή από το Push Button
     assign internal_cpu_clk = clk_source ? button_pulse : clk;
 
     // Εσωτερικά Wires Διασύνδεσης
@@ -63,7 +64,7 @@ module tt_um_top (
     // --- INSTANTIATION: ALU ---
     alu my_alu (
         .a(accum),
-        .b(clk_select ? ui_in : data_bus), // Αν είμαστε LIVE παίρνει κατευθείαν το 8-bit ui_in
+        .b(clk_select ? ui_in : data_bus), 
         .alu_op(clk_select ? live_opcode : alu_op),
         .alu_out(alu_out),
         .overflow(alu_of)
@@ -86,11 +87,9 @@ module tt_um_top (
         .overflow_flag(of_flag)
     );
 
-    // Διαχείριση του Data Bus για το STORE
     assign data_bus = ram_we ? accum : ram_out;
 
-    // Έξοδοι στα Pins του Chip
-    assign uo_out  = accum;                            // Τα 8 dedicated outputs δείχνουν τον αριθμό
-    assign uio_out = {of_flag, 7'b0000000};            // Το Overflow flag βγαίνει στο uio[7] (LED)
+    assign uo_out  = accum;                            
+    assign uio_out = {of_flag, 7'b0000000};            
 
 endmodule
