@@ -1,0 +1,23 @@
+name: gds
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Python and dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-python: '3.10'
+
+      - name: Setup Tiny Tapeout Action
+        uses: tinytapeout/tt-gds-action@v2
+        with:
+          install_tools: true
