@@ -42,3 +42,4 @@ pinout:
   "uio[5]": "Mode Select"
   "uio[6]": "Manual Clock Step Button"
   "uio[7]": "Overflow Flag LED"
+
