@@ -8,13 +8,12 @@ project:
   clock_hz:     10000000                
   tiles:        "1x1"                   
 
-  # Διαβάζουμε τα αρχεία ακριβώς με τα ονόματα που έχουν στη φωτογραφία σου
   source_files:
-    - "top.sv"
-    - "alu.sv"
-    - "ram.sv"
-    - "control.sv"
-    - "edge_det.sv"
+    - "src/project.sv"
+    - "src/alu.sv"
+    - "src/ram.sv"
+    - "src/control.sv"
+    - "src/edge_detector.sv"
 
   top_module:  "tt_um_top"              
 
