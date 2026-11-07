@@ -1,14 +1,12 @@
-# Tiny Tapeout project information
-yaml_version: [2]                       # <--- ΑΥΤΟ ΖΗΤΗΣΕ!
+yaml_version: 6
 
 project:
-  pdk:          "sky130A"               
   title:        "8-bit Signed CPU"      
   description:  "A modular 24-pin 8-bit Signed CPU with 16 ALU operations and LOAD/STORE capabilities"
   author:       "Student"               
   language:     "SystemVerilog"
   clock_hz:     10000000                
-  tiles:        "1x1"                   # <--- ΚΑΙ ΑΥΤΟ ΖΗΤΗΣΕ! (Καταλαμβάνει 1 tile)
+  tiles:        "1x1"                   
 
   source_files:
     - "project.sv"
@@ -17,11 +15,10 @@ project:
     - "control.sv"
     - "edge_detector.sv"
 
-  top_module:  "tt_um_top"              # <--- ΜΕΤΟΝΟΜΑΣΙΑ ΣΕ tt_um_top!
+  top_module:  "tt_um_top"              
 
-# Η ενότητα pinout που ζήτησε ο compiler για τη διευθέτηση των pins
 pinout:
-  ui_in:
+  ui:
     - "LIVE Data Bit 0"
     - "LIVE Data Bit 1"
     - "LIVE Data Bit 2"
@@ -30,7 +27,7 @@ pinout:
     - "LIVE Data Bit 5"
     - "LIVE Data Bit 6"
     - "LIVE Data Bit 7"
-  uo_out:
+  uo:
     - "Accumulator LED Bit 0"
     - "Accumulator LED Bit 1"
     - "Accumulator LED Bit 2"
@@ -39,7 +36,7 @@ pinout:
     - "Accumulator LED Bit 5"
     - "Accumulator LED Bit 6"
     - "Accumulator LED Bit 7"
-  uio_in:
+  uio:
     - "LIVE Opcode Bit 0"
     - "LIVE Opcode Bit 1"
     - "LIVE Opcode Bit 2"
@@ -47,28 +44,7 @@ pinout:
     - "Clock Source Select"
     - "Mode Select"
     - "Manual Clock Step Button"
-    - "UNUSED"
-  uio_out:
-    - "UNUSED"
-    - "UNUSED"
-    - "UNUSED"
-    - "UNUSED"
-    - "UNUSED"
-    - "UNUSED"
-    - "UNUSED"
     - "Overflow Flag LED"
-  uio_oe:
-    - "In"
-    - "In"
-    - "In"
-    - "In"
-    - "In"
-    - "In"
-    - "In"
-    - "Out"
 
-documentation:
-  inputs: "LIVE Data inputs"
-  outputs: "Accumulator outputs"
   bidirectional: "Control and status pins"
 
